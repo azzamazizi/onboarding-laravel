@@ -1,61 +1,103 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400"></a></p>
+# Panduan Instalasi Task DOT Onboarding [Laravel]
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/d/total.svg" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/v/stable.svg" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/license.svg" alt="License"></a>
-</p>
+by : M. Azzam Azizi <azzamazizi09@gmail.com>
 
-## About Laravel
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Langkah 1 : Konfigurasi
+atur `.env`, pastikan nama database : ```onboarding_movie```
+```sh
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=onboarding_movie
+DB_USERNAME=root
+DB_PASSWORD=
+```
+kemudian jalankan `composer update` untuk unduh resource vendor
+## Langkah 2 : Migrate Database
+jalankan perintah
+```sh
+php artisan migrate
+```
+maka proses import database akan dijalankan
+## Langkah 3 : Jalankan service laravel
+jalankan serve laravel
+```sh
+php artisan serve --port 8081
+```
+port ```8081``` yang saya gunakan.
+## Langkah 4 : Jalankan Database Seeder
+pertama jalankan seeder Studio dengan perintah :
+```sh
+php artisan db:seed StudiosSeeder
+```
+kemudian jalankan seeder Tag dengan perintah :
+```sh
+php artisan db:seed TagsSeeder
+```
+## Langkah 5 : Jalankan Scheduler
+scheduler digunakan untuk import data movies, jalankan perintah :
+```sh
+php artisan schedule:work
+```
+proses import data setiap 1 menit, untuk log data bisa dilihat di directory ```/storage/logs/laravel.log```
+## Langkah 6 : Atur Pagination
+dikarenakan pagination saya custom, ada setting yg perlu disesuaikan di directory ```/vendor/dvsauto/laravel-json-paginate/src/app/Providers/JsonPaginateServiceProvider.php```
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+> `ubah data` 
+```sh
+return [
+    'data'      =>  $paginate['data'],
+    'paginator' =>  [
+        'current_page'  =>  $paginate['current_page'],
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+        'prev_page'     =>  $prev_page,
+        'next_page'     =>  $next_page,
 
-## Learning Laravel
+        'first_page'    =>  1,
+        'is_first_page' =>  $is_first_page,
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+        'last_page'     =>  $paginate['last_page'],
+        'is_last_page'  =>  $is_last_page,
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 1500 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+        'page_keys'     =>  $page_keys,
 
-## Laravel Sponsors
+        'from_item'     =>  $paginate['from'],
+        'to_item'       =>  $paginate['to'],
+        'total_items'   =>  $paginate['total'],
+        'amount'        =>  $amount,
+        'per_page'      =>  $per_page,
+        'display_items' =>  count($paginate['data']),
+    ]
+];
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+> `menjadi`
 
-### Premium Partners
+```sh
+return [
+    'items'      =>  $paginate['data'],
+    'pagination' =>  [
+        'page'  =>  $paginate['current_page'],
+        'per_page'      =>  $per_page,
+        'total_items'   =>  $paginate['total'],
+        'total_pages'     =>  $paginate['last_page'],
+        'prev_page_link'     =>  $paginate['prev_page_url'] ?? null,
+        'next_page_link'     =>  $paginate['next_page_url'] ?? null,
+    ]
+];
+```
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[OP.GG](https://op.gg)**
+# - - - Selesai- - -
 
-## Contributing
+# Tambahan
+## Issue Error
+perlu ubah setting di `app/Providers/AppServiceProvider.php`, tambahkan didalam function boot :
+```sh
+Schema::defaultStringLength(191);
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
 
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+ubah tipe data di import database 
+- enum menjadi char/varchar
+- json menjadi char/varchar

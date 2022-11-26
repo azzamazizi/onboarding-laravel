@@ -63,7 +63,7 @@ CREATE TABLE `movie_schedules` (
 CREATE TABLE `orders` (
   `id` bigint PRIMARY KEY NOT NULL AUTO_INCREMENT,
   `user_id` bigint NOT NULL,
-  `payment_method` enum('cash','debit'),
+  `payment_method` varchar(50),
   `total_item_price` double,
   `created_at` datetime,
   `updated_at` datetime,
@@ -77,7 +77,7 @@ CREATE TABLE `order_items` (
   `qty` integer,
   `price` double,
   `sub_total_price` double,
-  `snapshots` json,
+  `snapshots` text,
   `created_at` datetime,
   `updated_at` datetime,
   `deleted_at` datetime
